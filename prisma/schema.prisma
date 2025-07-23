@@ -15,13 +15,23 @@ model User {
   createdAt      DateTime        @default(now())
   testCases      TestCase[]
   testExecutions TestExecution[]
+
+  createdTestSuite TestSuite[] @relation("CreatedByRelation")
+
+  modifiedTestSuite TestSuite[] @relation("UpdatedByRelation")
 }
 
 model TestSuite {
   id          Int        @id @default(autoincrement())
   title       String
-  description String
-  createdAt   DateTime   @default(now())
+  description String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdById    Int
+  updatedById    Int?
+
+  createdBy   User   @relation("CreatedByRelation", fields: [createdById], references: [id])
+  updatedBy   User?      @relation("UpdatedByRelation", fields: [updatedById], references: [id])
   testCases   TestCase[]
 }
 

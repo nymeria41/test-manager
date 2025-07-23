@@ -56,8 +56,12 @@ export class AuthService {
     }
 
     private generateToken(id: number, email: string) {
+        const payload = {
+            sub: id,       // convention JWT (subject)
+            email: email,
+        };
         return {
-            access_token: this.jwtService.sign({ sub: id, email }),
+            access_token: this.jwtService.sign(payload),
         };
     }
 }
