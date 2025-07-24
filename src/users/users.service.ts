@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import {Role} from "../auth/role/roles.enum";
 
 @Injectable()
 export class UsersService {
@@ -33,5 +34,12 @@ export class UsersService {
 
     async remove(id: number) {
         return this.prisma.user.delete({where :  {id},});
+    }
+
+    async updateUserRole(id: number, role: Role) {
+        return this.prisma.user.update({
+            where: { id },
+            data: { role },
+        });
     }
 }

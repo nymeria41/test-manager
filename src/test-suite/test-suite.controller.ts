@@ -15,10 +15,11 @@ import { UpdateTestSuiteDto } from './dto/update-test-suite.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import {CurrentUser} from "../common/decorators/current-user.decorator";
 import {ApiBearerAuth, ApiQuery} from "@nestjs/swagger";
+import {RolesGuard} from "../auth/role/roles.guard";
 
 @Controller('test-suites')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard) // protège toutes les routes avec JWT
+@UseGuards(JwtAuthGuard, RolesGuard) // protège toutes les routes avec JWT
 export class TestSuiteController {
     constructor(private readonly testSuiteService: TestSuiteService) {}
 
