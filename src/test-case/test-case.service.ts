@@ -29,8 +29,24 @@ export class TestCaseService {
     });
   }
 
-  findAll() {
-    return this.prisma.testCase.findMany();
+  async findAll(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.testCase.findMany({
+        skip,
+        take: limit,
+      }),
+      this.prisma.testCase.count(),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   findOne(id: number) {

@@ -7,14 +7,14 @@ import {
     Patch,
     Delete,
     ParseIntPipe,
-    UseGuards, Req,
+    UseGuards, Req, Query,
 } from '@nestjs/common';
 import { TestSuiteService } from './test-suite.service';
 import { CreateTestSuiteDto } from './dto/create-test-suite.dto';
 import { UpdateTestSuiteDto } from './dto/update-test-suite.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import {CurrentUser} from "../common/decorators/current-user.decorator";
-import {ApiBearerAuth} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiQuery} from "@nestjs/swagger";
 
 @Controller('test-suites')
 @ApiBearerAuth()
@@ -35,9 +35,14 @@ export class TestSuiteController {
         return this.testSuiteService.findByCreator(user.userId);
     }
 
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
     @Get()
-    findAll() {
-        return this.testSuiteService.findAll();
+    async findAll(
+        @Query('page') page = '1',
+        @Query('limit') limit = '10',
+    ) {
+        return this.testSuiteService.findAll(Number(page), Number(limit));
     }
 
     @Get(':id')

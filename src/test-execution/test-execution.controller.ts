@@ -1,9 +1,9 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query} from '@nestjs/common';
 import { TestExecutionService } from './test-execution.service';
 import { CreateTestExecutionDto } from './dto/create-test-execution.dto';
 import { UpdateTestExecutionDto } from './dto/update-test-execution.dto';
 import {CurrentUser} from "../common/decorators/current-user.decorator";
-import {ApiBearerAuth} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiQuery} from "@nestjs/swagger";
 import {JwtAuthGuard} from "../auth/jwt/jwt-auth.guard";
 
 @Controller('test-execution')
@@ -18,8 +18,13 @@ export class TestExecutionController {
   }
 
   @Get()
-  findAll() {
-    return this.testExecutionService.findAll();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async findAll(
+      @Query('page') page = '1',
+      @Query('limit') limit = '10',
+  ) {
+    return this.testExecutionService.findAll(Number(page), Number(limit));
   }
   @Get('by-user')
   findByUser(@CurrentUser() user) {

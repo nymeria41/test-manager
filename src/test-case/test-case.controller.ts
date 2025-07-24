@@ -1,10 +1,10 @@
-import {Controller, Post, Body, Patch, Param, UseGuards, Get, Delete} from '@nestjs/common';
+import {Controller, Post, Body, Patch, Param, UseGuards, Get, Delete, Query} from '@nestjs/common';
 import { TestCaseService } from './test-case.service';
 import { CreateTestCaseDto } from './dto/create-test-case.dto';
 import { UpdateTestCaseDto } from './dto/update-test-case.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import {CurrentUser} from "../common/decorators/current-user.decorator";
-import {ApiBearerAuth} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiQuery} from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -21,9 +21,13 @@ export class TestCaseController {
   }
 
   @Get()
-  findAll() {
-    return this.testCaseService.findAll();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  findAll(  @Query('page') page = '1',
+            @Query('limit') limit = '10',) {
+    return this.testCaseService.findAll(Number(page), Number(limit));
   }
+
   @Get('by-user/:userId')
   findByUser(@Param('userId') userId: string) {
     return this.testCaseService.findByUserId(+userId);
