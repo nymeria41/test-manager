@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import {CreateUserDto} from "../users/dto/create-user.dto";
+import {LoginDto} from "./dto/login.dto";
 
 @Injectable()
 export class AuthService {
@@ -45,11 +46,11 @@ export class AuthService {
         };
     }
 
-    async login(email: string, password: string) {
-        const user = await this.usersService.findByEmail(email);
+    async login(loginDto : LoginDto) {
+        const user = await this.usersService.findByEmail(loginDto.email);
         if (!user) throw new UnauthorizedException('Email invalide');
 
-        const match = await bcrypt.compare(password, user.password);
+        const match = await bcrypt.compare(loginDto.password, user.password);
         if (!match) throw new UnauthorizedException('Mot de passe incorrect');
 
         return this.generateToken(user.id, user.email);

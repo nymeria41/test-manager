@@ -19,20 +19,24 @@ model User {
   createdTestSuite TestSuite[] @relation("CreatedByRelation")
 
   modifiedTestSuite TestSuite[] @relation("UpdatedByRelation")
+
+  TestCase TestCase[] @relation("UpdatedTestCaseBy")
+
+  TestExecution TestExecution[] @relation("UpdatedTestExecutionBy")
 }
 
 model TestSuite {
-  id          Int        @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  createdById    Int
-  updatedById    Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById Int
+  updatedById Int?
 
-  createdBy   User   @relation("CreatedByRelation", fields: [createdById], references: [id])
-  updatedBy   User?      @relation("UpdatedByRelation", fields: [updatedById], references: [id])
-  testCases   TestCase[]
+  createdBy User       @relation("CreatedByRelation", fields: [createdById], references: [id], onDelete: Cascade)
+  updatedBy User?      @relation("UpdatedByRelation", fields: [updatedById], references: [id], onDelete: Cascade)
+  testCases TestCase[]
 }
 
 model TestCase {
@@ -41,11 +45,14 @@ model TestCase {
   description   String
   creatorId     Int
   createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   application   String
   estimatedTime Int
   imageUrls     String[]
   suiteId       Int
-  creator       User            @relation(fields: [creatorId], references: [id])
+  creator       User            @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  updatedById   Int?
+  updatedBy     User?           @relation("UpdatedTestCaseBy", fields: [updatedById], references: [id], onDelete: Cascade)
   suite         TestSuite       @relation(fields: [suiteId], references: [id])
   executions    TestExecution[]
 }
@@ -54,12 +61,16 @@ model TestExecution {
   id          Int      @id @default(autoincrement())
   date        DateTime @default(now())
   ownerId     Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   status      String
   environment String
   comment     String?
   imageUrls   String[]
   duration    Int
   testCaseId  Int
-  owner       User     @relation(fields: [ownerId], references: [id])
-  testCase    TestCase @relation(fields: [testCaseId], references: [id])
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  updatedById Int?
+  updatedBy   User?    @relation("UpdatedTestExecutionBy", fields: [updatedById], references: [id], onDelete: Cascade)
+  testCase    TestCase @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
 }

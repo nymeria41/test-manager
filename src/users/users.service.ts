@@ -19,6 +19,9 @@ export class UsersService {
     }
 
     async findByEmail(email: string) {
+        if (!email) {
+            throw new Error('Email must be provided');
+        }
         return this.prisma.user.findUnique({
             where: { email },
         });

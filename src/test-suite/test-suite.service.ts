@@ -54,4 +54,16 @@ export class TestSuiteService {
             where: { id },
         });
     }
+
+    async findByCreator(userId: number) {
+        return this.prisma.testSuite.findMany({
+            where: {
+                createdById: userId,
+            },
+            include: {
+                createdBy: true,
+                testCases: true,
+            },
+        });
+    }
 }

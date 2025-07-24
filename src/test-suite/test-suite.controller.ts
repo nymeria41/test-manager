@@ -14,8 +14,10 @@ import { CreateTestSuiteDto } from './dto/create-test-suite.dto';
 import { UpdateTestSuiteDto } from './dto/update-test-suite.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import {CurrentUser} from "../common/decorators/current-user.decorator";
+import {ApiBearerAuth} from "@nestjs/swagger";
 
 @Controller('test-suites')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard) // protège toutes les routes avec JWT
 export class TestSuiteController {
     constructor(private readonly testSuiteService: TestSuiteService) {}
@@ -28,6 +30,11 @@ export class TestSuiteController {
         });
     }
 
+    @Get('my-suites')
+    async findMySuites(@CurrentUser() user: { userId: number }) {
+        return this.testSuiteService.findByCreator(user.userId);
+    }
+
     @Get()
     findAll() {
         return this.testSuiteService.findAll();
@@ -37,6 +44,8 @@ export class TestSuiteController {
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.testSuiteService.findOne(id);
     }
+
+
 
     @Patch(':id')
     update(

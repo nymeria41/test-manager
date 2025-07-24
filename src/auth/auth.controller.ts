@@ -1,6 +1,8 @@
-import {Controller, Post, Body, Get} from '@nestjs/common';
+import {Controller, Post, Body} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {CreateUserDto} from "../users/dto/create-user.dto";
+import {LoginDto} from "./dto/login.dto";
+import {ApiBody, ApiOperation} from "@nestjs/swagger";
 
 @Controller('auth')
 export class AuthController {
@@ -12,8 +14,10 @@ export class AuthController {
     }
 
     @Post('login')
-    login(@Body() body: { email: string; password: string }) {
-        return this.authService.login(body.email, body.password);
+    @ApiOperation({ summary: 'User login' })
+    @ApiBody({ type: LoginDto })
+    login(@Body() loginDto: LoginDto ) {
+        return this.authService.login(loginDto);
     }
 
 
